@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "name": "vector-foundry-alan-vo",
+  "owner": "ALANDVO",
+  "email": "alanvo@gmail.com",
+  "domain": "AI/ML developer tools",
+  "summary": "Work in progress: vector-foundry-alan-vo",
+  "workflows": [
+    "Browse and search Rust tracking issues with filters for label, state, and readiness score",
+    "View detailed stabilization analysis including checklist progress, blocking dependencies, and unresolved questions",
+    "Compare up to six features side-by-side with metrics for readiness, checklist completion, blockers, and open questions"
+  ],
+  "auth": "oidc-keycloak-saml-broker",
+  "llm_providers": [
+    "openai-compatible",
+    "anthropic",
+    "gemini",
+    "ollama"
+  ],
+  "status": "work-in-progress"
+}
