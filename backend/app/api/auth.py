@@ -155,6 +155,7 @@ async def login(redirect: str = "/"):
         "scope": "openid profile email",
         "redirect_uri": f"{settings.keycloak_server_url}/realms/{settings.keycloak_realm}/protocol/openid-connect/token",
         "state": redirect,
+        "prompt": "login",
     }
 
     auth_url = f"{auth_endpoint}?{httpx.QueryParams(params)}"

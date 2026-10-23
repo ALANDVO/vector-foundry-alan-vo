@@ -26,7 +26,7 @@ Tests: `backend/tests/conftest.py`, `backend/tests/test_health.py`, `backend/tes
 
 ### auth-oidc — OIDC authentication with Keycloak (PKCE flow)
 
-Status: in_progress
+Status: done
 
 Acceptance:
 - Login redirects to Keycloak
@@ -36,7 +36,7 @@ Acceptance:
 - Role-based access control (viewer, operator, admin)
 - Tests cover unauthenticated rejection and role denial
 
-Implementation: `backend/app/api/auth.py`, `backend/app/core/auth.py`, `backend/app/models/user.py`, `frontend/src/api/auth.ts`, `frontend/src/components/Login.tsx`, `frontend/src/contexts/AuthContext.tsx`
+Implementation: `backend/app/api/auth.py`, `backend/app/core/auth.py`, `backend/app/models/user.py`, `frontend/src/api/auth.ts`, `frontend/src/components/Login.tsx`, `frontend/src/contexts/AuthContext.tsx`, `frontend/src/pages/Callback.tsx`
 
 Tests: `backend/tests/test_auth.py`, `frontend/src/__tests__/AuthContext.test.tsx`
 

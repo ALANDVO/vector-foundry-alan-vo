@@ -204,7 +204,7 @@ export function Comparison() {
                 </thead>
                 <tbody>
                   {metrics.map((metric) => {
-                    const values = state.issues.map(issue => (issue as Record<string, unknown>)[metric.key]);
+                    const values = state.issues.map(issue => issue[metric.key as keyof ComparisonIssue]);
                     const bestValue = metric.higherBetter
                       ? Math.max(...values.filter(v => v !== null && v !== undefined) as number[])
                       : Math.min(...values.filter(v => v !== null && v !== undefined) as number[]);

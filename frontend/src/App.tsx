@@ -4,6 +4,7 @@ import { Dashboard } from './pages/Dashboard';
 import { IssueDetail } from './pages/IssueDetail';
 import { Comparison } from './pages/Comparison';
 import { Login } from './components/Login';
+import { Callback } from './pages/Callback';
 import { Layout } from './components/Layout';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
@@ -51,6 +52,7 @@ function AppRoutes() {
           <Login />
         </PublicRoute>
       } />
+      <Route path="/callback" element={<Callback />} />
       <Route element={
         <ProtectedRoute>
           <Layout />
