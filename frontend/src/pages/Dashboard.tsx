@@ -101,13 +101,6 @@ export function Dashboard() {
     return '#dc2626';
   };
 
-  const getProgressLabel = (score?: number) => {
-    if (score === undefined) return 'Unknown';
-    if (score >= 80) return 'Near stabilization';
-    if (score >= 60) return 'Active development';
-    if (score >= 40) return 'Early stage';
-    return 'Blocked / Stalled';
-  };
 
   if (state.loading && state.issues.length === 0) {
     return (

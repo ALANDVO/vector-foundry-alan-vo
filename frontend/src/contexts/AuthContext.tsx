@@ -66,8 +66,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const checkAuth = useCallback(async () => {
     setLoading(true);
     try {
-      const userData = await apiClient.get<{ id: string; email: string; roles: string[] }>('/auth/me');
-      setUser(userData);
+      const userData = await apiClient.get<{ id: string; username: string; email: string; roles: string[] }>('/auth/me');
+      setUser({ id: userData.id, username: userData.username, email: userData.email, roles: userData.roles });
       const stored = sessionStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
