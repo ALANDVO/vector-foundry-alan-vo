@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_feature": "auth-oidc",
+  "current_feature": "sync-endpoints",
   "features": [
     {
       "id": "project-skeleton",
@@ -97,13 +97,15 @@
     {
       "id": "rust-issue-tracker",
       "title": "Rust tracking issue ingestion and storage",
-      "status": "planned",
+      "status": "in_progress",
       "acceptance": [
         "GitHub API fetches tracking issues from rust-lang/rust",
         "Issues stored in SQLite with full metadata",
         "API endpoints for listing, filtering, searching issues",
         "Pagination and sorting support",
-        "Background sync job updates issues periodically"
+        "Background sync job updates issues periodically",
+        "Manual sync trigger endpoint (POST /api/v1/issues/sync)",
+        "Sync history endpoint (GET /api/v1/issues/sync/history)"
       ],
       "implementation": [
         "backend/app/models/issue.py",
@@ -114,6 +116,24 @@
       "tests": [
         "backend/tests/test_issues.py",
         "backend/tests/test_github_sync.py"
+      ]
+    },
+    {
+      "id": "sync-endpoints",
+      "title": "Manual sync trigger and history endpoints",
+      "status": "done",
+      "acceptance": [
+        "POST /api/v1/issues/sync triggers manual GitHub sync with max_pages parameter",
+        "GET /api/v1/issues/sync/history returns recent sync operation logs",
+        "Both endpoints require authentication (401 if unauthenticated)",
+        "Sync response includes issues_fetched, issues_created, issues_updated, status, timestamps",
+        "Tests cover unauthenticated rejection for both endpoints"
+      ],
+      "implementation": [
+        "backend/app/api/issues.py"
+      ],
+      "tests": [
+        "backend/tests/test_issues.py"
       ]
     },
     {

@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-auth-oidc
+sync-endpoints
 
 ## Roadmap
 
@@ -42,7 +42,7 @@ Tests: `backend/tests/test_auth.py`, `frontend/src/__tests__/AuthContext.test.ts
 
 ### rust-issue-tracker — Rust tracking issue ingestion and storage
 
-Status: planned
+Status: in_progress
 
 Acceptance:
 - GitHub API fetches tracking issues from rust-lang/rust
@@ -50,10 +50,27 @@ Acceptance:
 - API endpoints for listing, filtering, searching issues
 - Pagination and sorting support
 - Background sync job updates issues periodically
+- Manual sync trigger endpoint (POST /api/v1/issues/sync)
+- Sync history endpoint (GET /api/v1/issues/sync/history)
 
 Implementation: `backend/app/models/issue.py`, `backend/app/services/github_sync.py`, `backend/app/api/issues.py`, `backend/app/core/database.py`
 
 Tests: `backend/tests/test_issues.py`, `backend/tests/test_github_sync.py`
+
+### sync-endpoints — Manual sync trigger and history endpoints
+
+Status: done
+
+Acceptance:
+- POST /api/v1/issues/sync triggers manual GitHub sync with max_pages parameter
+- GET /api/v1/issues/sync/history returns recent sync operation logs
+- Both endpoints require authentication (401 if unauthenticated)
+- Sync response includes issues_fetched, issues_created, issues_updated, status, timestamps
+- Tests cover unauthenticated rejection for both endpoints
+
+Implementation: `backend/app/api/issues.py`
+
+Tests: `backend/tests/test_issues.py`
 
 ### feature-analysis-engine — Feature stabilization analysis engine (core domain)
 
