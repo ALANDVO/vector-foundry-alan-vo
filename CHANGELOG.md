@@ -1,8 +1,18 @@
 # Changelog
 
+## 1.2.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
 ## 1.1.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
+
+### Added
+- **Sync Endpoints**: Manual sync trigger (`POST /api/v1/issues/sync`) and sync history (`GET /api/v1/issues/sync/history`) for Rust issue tracking
+- **Sync Authentication**: Both endpoints require valid OIDC authentication (401 if unauthenticated)
+- **Sync Response**: Returns issues_fetched, issues_created, issues_updated, status, timestamps
+- **Tests**: Added unauthenticated rejection tests for both new endpoints
 
 ## 1.0.0 — work-in-progress checkpoint
 

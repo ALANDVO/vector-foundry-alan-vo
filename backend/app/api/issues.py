@@ -3,11 +3,12 @@
 
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from app.api.auth import get_optional_user
 from sqlalchemy import select, func, or_, desc, asc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.models.issue import TrackingIssue, ChecklistItem, IssueAnalysis
+from app.models.issue import TrackingIssue, ChecklistItem, IssueAnalysis, SyncLog
 from app.schemas.issues import (
     IssueListResponse,
     IssueDetailResponse,
@@ -241,3 +242,62 @@ async def compare_issues(
         ))
 
     return response
+from app.services.github_sync import GitHubSyncService
+
+
+@router.post("/sync", status_code=status.HTTP_202_ACCEPTED)
+async def trigger_sync(
+    max_pages: int = Query(5, ge=1, le=50, description="Maximum pages to fetch"),
+    db: AsyncSession = Depends(get_db),
+    user=Depends(get_optional_user),
+) -> dict:
+    """Trigger manual sync of tracking issues from GitHub.
+    
+    Fetches tracking issues from rust-lang/rust and updates the local database.
+    Returns sync log with statistics.
+    """
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    async with GitHubSyncService() as sync_service:
+        sync_log = await sync_service.sync_all(db, max_pages=max_pages)
+        await db.refresh(sync_log)
+        return {
+            "id": sync_log.id,
+            "status": sync_log.status,
+            "issues_fetched": sync_log.issues_fetched,
+            "issues_created": sync_log.issues_created,
+            "issues_updated": sync_log.issues_updated,
+            "error_message": sync_log.error_message,
+            "started_at": sync_log.started_at.isoformat(),
+            "completed_at": sync_log.completed_at.isoformat() if sync_log.completed_at else None,
+        }
+
+
+@router.get("/sync/history", response_model=List[dict])
+async def sync_history(
+    limit: int = Query(10, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+    user=Depends(get_optional_user),
+) -> List[dict]:
+    """Get recent sync operation history."""
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    result = await db.execute(
+        select(SyncLog)
+        .order_by(desc(SyncLog.started_at))
+        .limit(limit)
+    )
+    sync_logs = result.scalars().all()
+    return [
+        {
+            "id": log.id,
+            "status": log.status,
+            "issues_fetched": log.issues_fetched,
+            "issues_created": log.issues_created,
+            "issues_updated": log.issues_updated,
+            "error_message": log.error_message,
+            "started_at": log.started_at.isoformat(),
+            "completed_at": log.completed_at.isoformat() if log.completed_at else None,
+        }
+        for log in sync_logs
+    ]

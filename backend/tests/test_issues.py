@@ -6,7 +6,7 @@ from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timezone
 
-from app.models.issue import TrackingIssue, ChecklistItem, IssueAnalysis
+from app.models.issue import TrackingIssue, ChecklistItem, IssueAnalysis, SyncLog
 
 
 @pytest.fixture
@@ -216,3 +216,17 @@ async def test_compare_empty(client: AsyncClient):
     assert response.status_code == 200
     data = response.json()
     assert data == []
+
+
+@pytest.mark.asyncio
+async def test_trigger_sync_unauthenticated(client: AsyncClient):
+    """Test sync endpoint requires authentication."""
+    response = await client.post("/api/v1/issues/sync")
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_sync_history_unauthenticated(client: AsyncClient):
+    """Test sync history endpoint requires authentication."""
+    response = await client.get("/api/v1/issues/sync/history")
+    assert response.status_code == 401
