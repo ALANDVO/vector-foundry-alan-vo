@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "current_feature": "sync-endpoints",
+  "current_feature": "rust-issue-tracker",
   "features": [
     {
       "id": "project-skeleton",
@@ -40,21 +40,10 @@
         "frontend/tsconfig.node.json",
         "frontend/vite.config.ts",
         "frontend/index.html",
-        "frontend/src/main.tsx",
-        "frontend/src/App.tsx",
-        "frontend/src/index.css",
-        "frontend/src/api/client.ts",
-        "frontend/src/api/config.ts",
-        "frontend/src/contexts/AuthContext.tsx",
-        "frontend/src/components/Login.tsx",
-        "frontend/src/components/Layout.tsx",
-        "frontend/src/pages/Dashboard.tsx",
-        "frontend/src/pages/IssueDetail.tsx",
-        "frontend/src/pages/Comparison.tsx",
-        "frontend/Dockerfile",
         "frontend/nginx.conf",
+        "frontend/Dockerfile",
         "compose.yaml",
-        ".github/workflows/ci.yml"
+        "docs/architecture.md"
       ],
       "tests": [
         "backend/tests/conftest.py",
@@ -97,7 +86,7 @@
     {
       "id": "rust-issue-tracker",
       "title": "Rust tracking issue ingestion and storage",
-      "status": "in_progress",
+      "status": "done",
       "acceptance": [
         "GitHub API fetches tracking issues from rust-lang/rust",
         "Issues stored in SQLite with full metadata",
@@ -111,7 +100,10 @@
         "backend/app/models/issue.py",
         "backend/app/services/github_sync.py",
         "backend/app/api/issues.py",
-        "backend/app/core/database.py"
+        "backend/app/core/database.py",
+        "backend/app/main.py",
+        "backend/app/core/config.py",
+        "backend/requirements.txt"
       ],
       "tests": [
         "backend/tests/test_issues.py",
@@ -223,7 +215,8 @@
         "pyproject.toml",
         ".env.example",
         "docs/architecture.md"
-      ]
+      ],
+      "tests": []
     }
   ]
 }

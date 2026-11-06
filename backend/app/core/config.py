@@ -63,6 +63,7 @@ class Settings(BaseSettings):
     github_api_url: str = "https://api.github.com"
     github_repo_owner: str = "rust-lang"
     github_repo_name: str = "rust"
+    github_sync_interval_minutes: int = 60
 
     # CORS
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])

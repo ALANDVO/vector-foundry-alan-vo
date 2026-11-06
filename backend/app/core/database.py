@@ -33,13 +33,12 @@ class DatabaseManager:
         self._engine = create_async_engine(
             settings.database_url,
             echo=settings.database_echo,
-            future=True,
+            connect_args={"check_same_thread": False} if "sqlite" in settings.database_url else {},
         )
         self._session_factory = async_sessionmaker(
             self._engine,
             class_=AsyncSession,
             expire_on_commit=False,
-            autoflush=False,
         )
 
     @property
@@ -74,7 +73,7 @@ class DatabaseManager:
     @asynccontextmanager
     async def session(self) -> AsyncGenerator[AsyncSession, None]:
         """Provide a transactional session scope."""
-        async with self.session_factory() as session:
+        async with self._session_factory() as session:
             try:
                 yield session
                 await session.commit()
@@ -84,7 +83,7 @@ class DatabaseManager:
 
     async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
         """FastAPI dependency for getting a database session."""
-        async with self.session_factory() as session:
+        async with self._session_factory() as session:
             try:
                 yield session
                 await session.commit()
@@ -93,6 +92,10 @@ class DatabaseManager:
                 raise
             finally:
                 await session.close()
+
+    async def get_async_session(self) -> AsyncSession:
+        """Get a standalone async session for background tasks."""
+        return self._session_factory()
 
 
 # Global database manager instance
@@ -103,6 +106,11 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """FastAPI dependency for database session."""
     async for session in db_manager.get_session():
         yield session
+
+
+async def get_async_session() -> AsyncSession:
+    """Get a standalone async session for background tasks."""
+    return await db_manager.get_async_session()
 
 
 async def init_db() -> None:

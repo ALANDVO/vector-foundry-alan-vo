@@ -1,8 +1,22 @@
 # Changelog
 
-## 1.2.0 — work-in-progress checkpoint
+## 1.3.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
+
+## 1.2.0 — work-in-progress checkpoint
+
+### Added
+- **Background Sync Job**: Periodic GitHub issue synchronization using APScheduler
+  - Configurable sync interval via `GITHUB_SYNC_INTERVAL_MINUTES` (default 60 minutes)
+  - Automatic startup/shutdown integration with FastAPI lifespan
+  - Graceful handling when GitHub token is not configured
+  - New dependency: `apscheduler==3.11.0`
+- **Database Session for Background Tasks**: Added `get_async_session()` function for standalone sessions
+
+### Changed
+- Updated `rust-issue-tracker` feature status to **done** (all acceptance criteria met)
+- Updated `.env.example` with `GITHUB_SYNC_INTERVAL_MINUTES` configuration
 
 ## 1.1.0 — work-in-progress checkpoint
 
