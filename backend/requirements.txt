@@ -11,6 +11,7 @@ pydantic-settings==2.5.2
 sqlalchemy==2.0.34
 alembic==1.13.2
 aiosqlite==0.20.0
+apscheduler==3.11.0
 
 # Authentication
 python-jose[cryptography]==3.3.0

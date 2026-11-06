@@ -4,12 +4,32 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
-from app.core.database import init_db, close_db
+from app.core.database import init_db, close_db, get_async_session
 from app.api import issues, auth, llm
+from app.services.github_sync import GitHubSyncService
+
+
+scheduler = AsyncIOScheduler()
+
+
+async def scheduled_sync():
+    """Background task to sync issues from GitHub."""
+    settings = get_settings()
+    if not settings.github_token:
+        return  # Skip sync if no GitHub token configured
+
+    async with GitHubSyncService() as sync_service:
+        async with get_async_session() as db:
+            try:
+                await sync_service.sync_all(db, max_pages=5)
+            except Exception:
+                # Log error but don't crash the scheduler
+                pass
 
 
 @asynccontextmanager
@@ -17,8 +37,23 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan manager for startup/shutdown."""
     # Startup
     await init_db()
+
+    # Start background scheduler for periodic sync
+    settings = get_settings()
+    if settings.github_token and settings.github_sync_interval_minutes > 0:
+        scheduler.add_job(
+            scheduled_sync,
+            "interval",
+            minutes=settings.github_sync_interval_minutes,
+            id="github_sync",
+            replace_existing=True,
+        )
+        scheduler.start()
+
     yield
+
     # Shutdown
+    scheduler.shutdown(wait=False)
     await close_db()
 
 

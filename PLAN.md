@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-sync-endpoints
+rust-issue-tracker
 
 ## Roadmap
 
@@ -20,7 +20,7 @@ Acceptance:
 - Backend tests pass (pytest)
 - Frontend typecheck and build pass
 
-Implementation: `backend/app/main.py`, `backend/app/core/config.py`, `backend/app/core/database.py`, `backend/app/models/__init__.py`, `backend/app/models/issue.py`, `backend/app/models/user.py`, `backend/app/api/__init__.py`, `backend/app/api/issues.py`, `backend/app/api/auth.py`, `backend/app/api/llm.py`, `backend/app/schemas/__init__.py`, `backend/app/schemas/issues.py`, `backend/app/schemas/auth.py`, `backend/app/schemas/llm.py`, `backend/app/services/__init__.py`, `backend/app/services/analysis.py`, `backend/app/services/github_sync.py`, `backend/app/services/llm.py`, `backend/requirements.txt`, `backend/Dockerfile`, `frontend/package.json`, `frontend/tsconfig.json`, `frontend/tsconfig.node.json`, `frontend/vite.config.ts`, `frontend/index.html`, `frontend/src/main.tsx`, `frontend/src/App.tsx`, `frontend/src/index.css`, `frontend/src/api/client.ts`, `frontend/src/api/config.ts`, `frontend/src/contexts/AuthContext.tsx`, `frontend/src/components/Login.tsx`, `frontend/src/components/Layout.tsx`, `frontend/src/pages/Dashboard.tsx`, `frontend/src/pages/IssueDetail.tsx`, `frontend/src/pages/Comparison.tsx`, `frontend/Dockerfile`, `frontend/nginx.conf`, `compose.yaml`, `.github/workflows/ci.yml`
+Implementation: `backend/app/main.py`, `backend/app/core/config.py`, `backend/app/core/database.py`, `backend/app/models/__init__.py`, `backend/app/models/issue.py`, `backend/app/models/user.py`, `backend/app/api/__init__.py`, `backend/app/api/issues.py`, `backend/app/api/auth.py`, `backend/app/api/llm.py`, `backend/app/schemas/__init__.py`, `backend/app/schemas/issues.py`, `backend/app/schemas/auth.py`, `backend/app/schemas/llm.py`, `backend/app/services/__init__.py`, `backend/app/services/analysis.py`, `backend/app/services/github_sync.py`, `backend/app/services/llm.py`, `backend/requirements.txt`, `backend/Dockerfile`, `frontend/package.json`, `frontend/tsconfig.json`, `frontend/tsconfig.node.json`, `frontend/vite.config.ts`, `frontend/index.html`, `frontend/nginx.conf`, `frontend/Dockerfile`, `compose.yaml`, `docs/architecture.md`
 
 Tests: `backend/tests/conftest.py`, `backend/tests/test_health.py`, `backend/tests/test_issues.py`, `backend/tests/test_analysis.py`, `backend/tests/test_auth.py`, `backend/tests/test_github_sync.py`, `backend/tests/test_llm.py`, `frontend/src/__tests__/setup.ts`, `frontend/src/__tests__/App.test.tsx`
 
@@ -42,7 +42,7 @@ Tests: `backend/tests/test_auth.py`, `frontend/src/__tests__/AuthContext.test.ts
 
 ### rust-issue-tracker — Rust tracking issue ingestion and storage
 
-Status: in_progress
+Status: done
 
 Acceptance:
 - GitHub API fetches tracking issues from rust-lang/rust
@@ -53,7 +53,7 @@ Acceptance:
 - Manual sync trigger endpoint (POST /api/v1/issues/sync)
 - Sync history endpoint (GET /api/v1/issues/sync/history)
 
-Implementation: `backend/app/models/issue.py`, `backend/app/services/github_sync.py`, `backend/app/api/issues.py`, `backend/app/core/database.py`
+Implementation: `backend/app/models/issue.py`, `backend/app/services/github_sync.py`, `backend/app/api/issues.py`, `backend/app/core/database.py`, `backend/app/main.py`, `backend/app/core/config.py`, `backend/requirements.txt`
 
 Tests: `backend/tests/test_issues.py`, `backend/tests/test_github_sync.py`
 
