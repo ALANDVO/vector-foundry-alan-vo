@@ -130,3 +130,7 @@ docker compose up -d
 - CORS restricted to configured origins
 - Rate limiting recommended at reverse proxy
 - Regular dependency updates via Dependabot
+
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)

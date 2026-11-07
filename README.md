@@ -250,3 +250,7 @@ MIT License — Copyright (c) 2024 Alan Vo <alanvo@gmail.com>
 ---
 
 *Vector Foundry — Empowering everyone to build reliable and efficient software.*
+
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)

@@ -72,3 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - .dockerignore files for minimal build contexts
 - SQLite for development, PostgreSQL-ready for production
 - Keycloak realm import ready for SAML broker setup
+
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)

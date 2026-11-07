@@ -134,3 +134,6 @@ Acceptance:
 
 Implementation: `README.md`, `CHANGELOG.md`, `portfolio.json`, `LICENSE`, `pyproject.toml`, `.env.example`, `docs/architecture.md`
 
+---
+
+Alan Vo · [alanvo.net](https://alanvo.net)
