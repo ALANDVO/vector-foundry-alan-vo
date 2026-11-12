@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
 from app.core.database import init_db, close_db, get_async_session
-from app.api import issues, auth, llm
+from app.api import issues, auth, llm, analysis
 from app.services.github_sync import GitHubSyncService
 
 
@@ -98,6 +98,7 @@ def create_app() -> FastAPI:
     app.include_router(issues.router, prefix=api_prefix)
     app.include_router(auth.router, prefix=api_prefix)
     app.include_router(llm.router, prefix=api_prefix)
+    app.include_router(analysis.router, prefix=api_prefix)
 
     return app
 
