@@ -21,15 +21,9 @@ class AnalysisResult:
 
 
 # Patterns for parsing tracking issues
-CHECKLIST_PATTERN = re.compile(
-    r'^\s*[-*]\s+\[([ xX])\]\s*(.+)$',
-    re.MULTILINE
-)
-
-SUB_CHECKLIST_PATTERN = re.compile(
-    r'^\s{2,}[-*]\s+\[([ xX])\]\s*(.+)$',
-    re.MULTILINE
-)
+# A checklist line is a bullet followed by a Markdown checkbox. Capture groups:
+# 1 = indentation (spaces), 2 = checkbox marker, 3 = item text.
+CHECKLIST_LINE_PATTERN = re.compile(r'^(\s*)[-*+]\s+\[([ xX])\]\s+(.*\S)\s*$')
 
 LINKED_ISSUE_PATTERN = re.compile(
     r'#(\d+)',
@@ -69,43 +63,50 @@ PROGRESS_KEYWORDS = {
 
 
 def parse_checklist(body: str) -> List[Tuple[str, bool, int]]:
-    """Parse checklist items from issue body."""
-    items = []
+    """Parse checkbox items from an issue body.
 
-    # Find main checklist section
-    lines = body.split('\n')
-    in_checklist = False
-    checklist_content = []
+    Returns ``(text, completed, level)`` triples in document order. Items nest
+    by indentation relative to the nearest shallower item, so 2-space, 4-space
+    and tab indentation all work. Fenced code blocks are skipped so example
+    markup in a body is not counted as progress. Bullets outside any checklist
+    section are still read: an item counts only if it carries a Markdown
+    checkbox, which keeps prose bullet lists from inflating progress totals.
+    """
+    if not body:
+        return []
 
-    for line in lines:
-        if re.match(r'^##+\s*(?:Implementation )?(?:Steps|Checklist|Tasks)', line, re.IGNORECASE):
-            in_checklist = True
+    items: List[Tuple[str, bool, int]] = []
+    # Indentation width of each nesting level, e.g. [0, 2, 4].
+    indent_stack: List[int] = []
+    in_fence = False
+
+    for raw_line in body.split('\n'):
+        line = raw_line.rstrip('\r')
+
+        # Fenced code blocks may contain example checklists; skip them.
+        if line.strip().startswith('```') or line.strip().startswith('~~~'):
+            in_fence = not in_fence
             continue
-        elif in_checklist and re.match(r'^##+\s', line):
-            in_checklist = False
-            break
-        elif in_checklist:
-            checklist_content.append(line)
+        if in_fence:
+            continue
 
-    checklist_text = '\n'.join(checklist_content)
+        match = CHECKLIST_LINE_PATTERN.match(line)
+        if not match:
+            continue
 
-    # Parse top-level items
-    for match in CHECKLIST_PATTERN.finditer(checklist_text):
-        completed = match.group(1).lower() == 'x'
-        text = match.group(2).strip()
-        items.append((text, completed, 0))
+        indent = len(match.group(1).expandtabs(4))
+        completed = match.group(2).lower() == 'x'
+        text = match.group(3).strip()
 
-        # Look for sub-items after this item
-        # Find position of this match
-        pos = match.end()
-        next_match = CHECKLIST_PATTERN.search(checklist_text, pos)
-        end_pos = next_match.start() if next_match else len(checklist_text)
-        sub_text = checklist_text[pos:end_pos]
+        if not indent_stack or indent > indent_stack[-1]:
+            level = len(indent_stack)
+            indent_stack.append(indent)
+        else:
+            while len(indent_stack) > 1 and indent < indent_stack[-1]:
+                indent_stack.pop()
+            level = max(0, len(indent_stack) - 1)
 
-        for sub_match in SUB_CHECKLIST_PATTERN.finditer(sub_text):
-            sub_completed = sub_match.group(1).lower() == 'x'
-            sub_text_clean = sub_match.group(2).strip()
-            items.append((sub_text_clean, sub_completed, 1))
+        items.append((text, completed, level))
 
     return items
 
