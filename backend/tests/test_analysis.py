@@ -121,6 +121,27 @@ def test_detect_blockers(sample_issue):
     assert any("#37653" in b for b in blockers)
 
 
+def test_detect_blockers_feature_to_feature():
+    """Concrete 'Blocked by #NNN' entries are surfaced from blocker sentences."""
+    body = (
+        "This feature is blocked by #12345 until the trait solver lands.\n"
+        "Another dependency: requires #67890 to be merged first.\n"
+        "Unrelated prose that mentions #11111 but no blocker keyword."
+    )
+    blockers = detect_blockers(body, [12345, 67890, 11111])
+
+    blocked_by = [b for b in blockers if b.startswith("Blocked by #")]
+    # Both #12345 and #67890 co-occur with blocker keywords in their sentence.
+    assert "Blocked by #12345" in blocked_by
+    assert "Blocked by #67890" in blocked_by
+    # #11111 appears in a sentence without a blocker keyword -> not a dependency.
+    assert "Blocked by #11111" not in blocked_by
+    # No duplicates for a number referenced twice on blocker sentences.
+    body_dup = "blocked by #12345 and still blocked by #12345 again"
+    dup_blockers = [b for b in detect_blockers(body_dup, []) if b.startswith("Blocked by #")]
+    assert dup_blockers.count("Blocked by #12345") == 1
+
+
 def test_calculate_readiness_score(sample_issue):
     """Test readiness score calculation."""
     checklist_items = [
