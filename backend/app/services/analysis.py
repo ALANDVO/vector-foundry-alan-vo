@@ -167,25 +167,50 @@ def categorize_question(question: str) -> str:
 
 
 def detect_blockers(body: str, linked_issues: List[int]) -> List[str]:
-    """Detect blocking dependencies from issue body."""
-    blockers = []
+    """Detect blocking dependencies from issue body.
+
+    Two kinds of dependencies are reported:
+
+    1. Explicit blocker sentences: for each blocker keyword, the surrounding
+       context is quoted once so the analyst sees the human phrasing.
+    2. Concrete ``Blocked by #NNNN`` entries: a linked issue/PR number that
+       co-occurs with a blocker keyword in the same sentence. These turn vague
+       prose such as "blocked by #12345" into a machine-readable dependency on
+       a specific feature, satisfying the "between features" requirement.
+    """
+    blockers: List[str] = []
     body_lower = body.lower()
 
-    # Check for explicit blocker mentions
+    # (1) Explicit blocker sentences with surrounding context.
+    seen_keywords = set()
     for keyword in BLOCKER_KEYWORDS:
-        if keyword in body_lower:
-            # Find context around keyword
+        if keyword in body_lower and keyword not in seen_keywords:
+            seen_keywords.add(keyword)
             idx = body_lower.index(keyword)
             start = max(0, idx - 100)
             end = min(len(body), idx + 100)
             context = body[start:end].strip()
             blockers.append(f"Mentions '{keyword}': ...{context}...")
 
+    # (2) Concrete feature-to-feature blockers: numbers near a keyword.
+    # Split on sentence/newline boundaries so a keyword only associates with
+    # references that share its immediate sentence.
+    blocked_by: List[int] = []
+    for sentence in re.split(r'(?<=[.!?])|\n', body):
+        sentence_lower = sentence.lower()
+        if not any(kw in sentence_lower for kw in BLOCKER_KEYWORDS):
+            continue
+        for num_match in re.finditer(r'#(\d+)', sentence):
+            n = int(num_match.group(1))
+            if n not in blocked_by:
+                blocked_by.append(n)
+                blockers.append(f"Blocked by #{n}")
+
     # Add linked issues as potential dependencies
     for issue_num in linked_issues:
         blockers.append(f"References rust-lang/rust#{issue_num}")
 
-    return blockers[:10]  # Limit
+    return blockers[:15]  # Limit
 
 
 def calculate_readiness_score(
