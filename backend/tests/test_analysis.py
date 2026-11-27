@@ -109,6 +109,12 @@ def test_categorize_question():
     assert categorize_question("Some random question") == "General"
 
 
+def test_categorize_question_testing():
+    """Test question categorization for testing topics."""
+    assert categorize_question('How do we test this feature?') == 'Testing'
+    assert categorize_question('Testing strategies for the implementation') == 'Testing'
+    assert categorize_question('Can we add property-based testing?') == 'Testing'
+
 def test_detect_blockers(sample_issue):
     """Test detecting blocking dependencies."""
     linked = extract_linked_issues(sample_issue.body)

@@ -150,6 +150,8 @@ def categorize_question(question: str) -> str:
 
     if any(kw in q_lower for kw in ['name', 'naming', 'bikeshed', 'called']):
         return 'Naming'
+    elif any(kw in q_lower for kw in ['test', 'testing', 'spec', 'verif']):
+        return 'Testing'
     elif any(kw in q_lower for kw in ['sound', 'unsound', 'safety', 'ub', 'undefined behavior']):
         return 'Soundness'
     elif any(kw in q_lower for kw in ['api', 'interface', 'signature', 'method', 'function']):
